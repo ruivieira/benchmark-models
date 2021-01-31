@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from joblib import dump
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
+from sklearn2pmml import sklearn2pmml
+from sklearn2pmml.pipeline import PMMLPipeline
 
 
 @click.command()
@@ -29,8 +31,17 @@ def main(input_data, output_data, model_dest):
     model.fit(X_train, y_train)
 
     model.fit(X_train, y_train)
-    logger.info("Saving model")
-    dump(model, model_dest)
+    logger.info("Saving joblib model")
+    dump(model, model_dest + ".joblib")
+
+    pipeline = PMMLPipeline(
+        [("classifier", RandomForestRegressor(verbose=True, n_jobs=-1))]
+    )
+    pipeline.fit(X_train, y_train)
+    pipeline.verify(X_test.sample(n=10))
+
+    logger.info("Saving PMML model")
+    sklearn2pmml(pipeline, model_dest + ".pmml")
 
 
 if __name__ == "__main__":

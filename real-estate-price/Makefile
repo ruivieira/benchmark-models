@@ -31,7 +31,7 @@ data: requirements
 
 ## Train a model
 train: data
-	$(PYTHON_INTERPRETER) src/models/train_model.py data/processed/inputs.csv data/processed/outputs.csv models/model.joblib
+	$(PYTHON_INTERPRETER) src/models/train_model.py data/processed/inputs.csv data/processed/outputs.csv models/model
 
 ## Delete all compiled Python files
 clean:
