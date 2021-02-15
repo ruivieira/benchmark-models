@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
-import os
 import click
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -10,6 +9,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn2pmml import sklearn2pmml
 from sklearn2pmml.pipeline import PMMLPipeline
+from nyoka import skl_to_pmml
 
 
 @click.command()
@@ -40,7 +40,13 @@ def main(input_data, output_data, model_dest):
     pipeline.verify(X_test.sample(n=10))
 
     logger.info("Saving PMML model")
-    sklearn2pmml(pipeline, model_dest + ".pmml")
+    # sklearn2pmml(pipeline, model_dest + ".pmml")
+    skl_to_pmml(
+        pipeline,
+        ["Age", "Debt", "YearsEmployed", "Income"],
+        "Approved",
+        model_dest + ".pmml",
+    )
 
 
 if __name__ == "__main__":

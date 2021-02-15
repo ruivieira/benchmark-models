@@ -1,10 +1,28 @@
-minimal-numerical
-==============================
+# minimal-numerical
 
-A short description of the project.
 
-Project Organization
-------------
+A minimal classification model for a loan approval using numerical-only inputs.
+
+## Preparing data
+
+To prepare the final, processed dataset from the raw data available, run:
+
+```shell
+$ make data
+```
+
+Please note that other steps have the data preparation as a requirement, so you can skip this step.
+
+## Train the model
+
+To train the model run
+
+```shell
+$ make train
+```
+
+## Project Organization
+
 
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
