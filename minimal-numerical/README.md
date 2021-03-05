@@ -1,6 +1,5 @@
 # minimal-numerical
 
-
 A minimal classification model for a loan approval using numerical-only inputs.
 
 ## Preparing data
@@ -21,8 +20,12 @@ To train the model run
 $ make train
 ```
 
-## Project Organization
+This will create two model files in `./models/`:
 
+1. A `PMML` model (`model.pmml`)
+2. A pickled Python model (`model.joblib`)
+
+## Project Organization
 
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
@@ -69,7 +72,6 @@ $ make train
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
-
---------
+---
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
