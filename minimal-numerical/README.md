@@ -1,6 +1,10 @@
 # minimal-numerical
 
 A minimal classification model for a loan approval using numerical-only inputs.
+Further documentation is available in these Jupyter notebooks:
+
+1. [Data exploration](./notebooks/01-data-exploration.ipynb)
+2. [Model tuning](./notebooks/02-model-tuning.ipynb)
 
 ## Preparing data
 
