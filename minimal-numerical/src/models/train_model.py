@@ -25,7 +25,15 @@ def main(input_data, output_data, model_dest):
         inputs, outputs, test_size=0.4, random_state=23
     )
 
-    model = RandomForestClassifier(verbose=True, n_jobs=-1)
+    logger.info("Create model (tuned hyperparams)")
+    model = RandomForestClassifier(
+        max_depth=8,
+        max_leaf_nodes=64,
+        max_samples=0.5,
+        n_estimators=10,
+        verbose=True,
+        n_jobs=-1,
+    )
 
     logger.info("Fitting model")
     model = model.fit(X_train, y_train)
