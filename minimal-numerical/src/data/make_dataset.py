@@ -27,12 +27,15 @@ def main(input_filepath, output_filepath):
     # remove non-numeric rows from 'Age'
     df = df[pd.to_numeric(df["Age"], errors="coerce").notnull()]
 
-    inputs = df[["Age", "Debt", "YearsEmployed", "Income"]]
+    # filter out outlier incomes
+    filtered = df[df["Income"] < 370]
+
+    inputs = filtered[["Age", "Debt", "YearsEmployed", "Income"]]
 
     # convert 'Age' to a float field
     inputs["Age"] = inputs["Age"].astype("float64")
 
-    outputs = df[["Approved"]]
+    outputs = filtered[["Approved"]]
     outputs = outputs.replace({"-": 0, "+": 1}).astype("int8")
 
     inputs_dest_file = os.path.join(output_filepath, "inputs.csv")
