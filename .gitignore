@@ -130,3 +130,6 @@ dmypy.json
 
 .DS_Store
 *.joblib
+.idea
+*/data/interim/*.csv
+*/data/processed/*.csv
