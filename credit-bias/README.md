@@ -23,6 +23,14 @@ If you are only interested in a pre-processed dataset (`data/interim/data.csv`),
 $ make data
 ```
 
+## Model training
+
+To train a XGBoost model use
+
+```shell
+$ make train
+```
+
 
 ## Jupyter notebooks
 
