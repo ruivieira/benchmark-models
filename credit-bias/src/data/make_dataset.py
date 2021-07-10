@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 import click
+import colorlog
 import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 import pandas as pd
 import numpy as np
 import os
+
+handler = colorlog.StreamHandler()
+handler.setFormatter(
+    colorlog.ColoredFormatter("%(log_color)s%(levelname)s:%(name)s:%(message)s")
+)
+logger = colorlog.getLogger(__name__)
 
 
 def filter_columns(df_: pd.DataFrame) -> pd.DataFrame:
@@ -200,7 +207,6 @@ def main(input_filepath, output_filepath):
     """Runs data processing scripts to turn raw data from (../raw) into
     cleaned data ready to be analyzed (saved in ../processed).
     """
-    logger = logging.getLogger(__name__)
     logger.info("making interim data set from raw data")
 
     # load raw dataset
