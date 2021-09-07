@@ -3,14 +3,17 @@ from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 import os
 import click
+from nyoka.skl.skl_to_pmml import skl_to_pmml
 import pandas as pd
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn import preprocessing
 from sklearn.ensemble import RandomForestClassifier
+from sklearn2pmml.pipeline import PMMLPipeline
 from sklearn_pandas import DataFrameMapper
 from sklearn.pipeline import Pipeline
 from joblib import dump
 import numpy as np
+from sklearn2pmml import sklearn2pmml
 
 
 def build_RF_pipeline(inputs, outputs, categorical, numerical, rf=None):
@@ -91,6 +94,26 @@ def main(input_data, output_data, model_dest):
     model.fit(X_train, y_train)
     logger.info("Saving model")
     dump(model, model_dest)
+
+    pipeline = PMMLPipeline(
+        [("classifier", model)]
+    )
+
+    logger.info("Saving PMML model")
+    skl_to_pmml(
+        pipeline,
+        [
+            "FLAG_OWN_CAR",
+            "FLAG_OWN_REALTY",
+            "CNT_CHILDREN",
+            "AMT_INCOME_TOTAL",
+            "AGE",
+            "DAYS_EMPLOYED",
+            "FLAG_WORK_PHONE",
+        ],
+        "APPROVED",
+        model_dest + ".pmml",
+    )
 
 
 if __name__ == "__main__":
