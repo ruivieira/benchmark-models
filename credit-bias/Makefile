@@ -38,7 +38,7 @@ features: requirements data
 ## Make model
 train: requirements features
 
-	$(PYTHON_INTERPRETER) src/models/train_model.py data/processed models/model.joblib
+	$(PYTHON_INTERPRETER) src/models/train_model.py -i data/processed -o models/model -f ubj
 
 ## Delete all compiled Python files
 clean:

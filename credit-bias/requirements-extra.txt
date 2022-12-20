@@ -2,3 +2,5 @@
 -e .
 
 # extra requirements
+sklearn2pmml==0.89.1
+nyoka==5.4.0
