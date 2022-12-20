@@ -16,7 +16,8 @@ from nyoka import skl_to_pmml
 @click.argument("input_data", type=click.Path(exists=True))
 @click.argument("output_data", type=click.Path())
 @click.argument("model_dest", type=click.Path())
-def main(input_data, output_data, model_dest):
+@click.argument("serialisation")
+def main(input_data, output_data, model_dest, serialisation):
     logger = logging.getLogger(__name__)
     logger.info("Loading input and output data")
     inputs = pd.read_csv(input_data)
@@ -38,8 +39,6 @@ def main(input_data, output_data, model_dest):
     logger.info("Fitting model")
     model = model.fit(X_train, y_train)
 
-    logger.info("Saving joblib model")
-    dump(model, model_dest + ".joblib")
 
     pipeline = PMMLPipeline(
         [("classifier", RandomForestClassifier(verbose=True, n_jobs=-1))]
@@ -47,14 +46,21 @@ def main(input_data, output_data, model_dest):
     pipeline.fit(X_train, y_train)
     pipeline.verify(X_test.sample(n=10))
 
-    logger.info("Saving PMML model")
-    # sklearn2pmml(pipeline, model_dest + ".pmml")
-    skl_to_pmml(
-        pipeline,
-        ["Age", "Debt", "YearsEmployed", "Income"],
-        "Approved",
-        model_dest + ".pmml",
-    )
+    if serialisation=="pmml":
+        logger.info("Saving PMML model")
+        # sklearn2pmml(pipeline, model_dest + ".pmml")
+        skl_to_pmml(
+            pipeline,
+            ["Age", "Debt", "YearsEmployed", "Income"],
+            "Approved",
+            model_dest + ".pmml",
+        )
+    elif serialisation=="joblib":
+        logger.info("Saving joblib model")
+        dump(model, model_dest + ".joblib")
+    elif serialisation=="dill":
+        pass
+
 
 
 if __name__ == "__main__":

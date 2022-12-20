@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from typing import List
 import click
+from pandas.core.frame import DataFrame
 import colorlog
 import logging
 from pathlib import Path
@@ -8,8 +10,14 @@ import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
+
+
 from xgboost.sklearn import XGBClassifier
+from sklearn2pmml.pipeline import PMMLPipeline
+from nyoka.skl.skl_to_pmml import skl_to_pmml
 import joblib
+import numpy as np
+from typing import List, Optional
 
 handler = colorlog.StreamHandler()
 handler.setFormatter(
@@ -26,59 +34,115 @@ def main(input_filepath, output_filepath):
 
     # load processed dataset
     logger.info("Loading processed dataset")
-    _df = pd.read_csv(os.path.join(input_filepath, "train.csv"))
+    _df: DataFrame = pd.read_csv(os.path.join(input_filepath, "train.csv"))
 
-    X_df = _df.drop("PaidLoan", axis=1)
-    y_df = _df["PaidLoan"]
+    if _df:
 
-    train_x, _, train_y, _ = train_test_split(
-        X_df, y_df, test_size=0.25, random_state=42
-    )
+        X_df: Optional[DataFrame] = _df.drop("PaidLoan", axis=1)
+        y_df: DataFrame = _df["PaidLoan"]
 
-    scale_pos_weight = (len(train_y) - train_y.sum()) / train_y.sum()
+        train_x: np.ndarray
+        train_y: np.ndarray
+        train_x, _, train_y, _ = train_test_split(
+            X_df, y_df, test_size=0.25, random_state=42
+        )
 
-    param_test = {
-        "max_depth": [1, 4, 8],
-        "learning_rate": [0.05, 0.06, 0.07],
-        "n_estimators": [10, 100, 200],
-    }
+        scale_pos_weight = (len(train_y) - train_y.sum()) / train_y.sum()
 
-    gsearch = GridSearchCV(
-        estimator=XGBClassifier(
+        param_test = {
+            "max_depth": [1, 4, 8],
+            "learning_rate": [0.05, 0.06, 0.07],
+            "n_estimators": [10, 100, 200],
+        }
+
+        gsearch = GridSearchCV(
+            estimator=XGBClassifier(
+                objective="binary:logistic",
+                eval_metric="error",
+                scale_pos_weight=scale_pos_weight,
+                seed=27,
+                use_label_encoder=False,
+            ),
+            param_grid=param_test,
+            scoring="roc_auc",
+            n_jobs=-1,
+            cv=8,
+            verbose=10,
+        )
+
+        gsearch.fit(train_x, train_y)
+
+        best_params, best_score = gsearch.best_params_, gsearch.best_score_
+        logger.info(
+            "Best Parameters: {} | Best AUC: {}".format(best_params, best_score)
+        )
+
+        scale_pos_weight = (len(train_y) - train_y.sum()) / train_y.sum()
+        xgb_model = XGBClassifier(
             objective="binary:logistic",
             eval_metric="error",
             scale_pos_weight=scale_pos_weight,
             seed=27,
+            max_depth=best_params["max_depth"],
+            learning_rate=best_params["learning_rate"],
+            n_estimators=best_params["n_estimators"],
             use_label_encoder=False,
-        ),
-        param_grid=param_test,
-        scoring="roc_auc",
-        n_jobs=-1,
-        cv=8,
-        verbose=10,
-    )
+        )
 
-    gsearch.fit(train_x, train_y)
+        xgb_model.fit(train_x, train_y)
 
-    best_params, best_score = gsearch.best_params_, gsearch.best_score_
-    logger.info("Best Parameters: {} | Best AUC: {}".format(best_params, best_score))
+        joblib.dump(xgb_model, output_filepath)
+        logger.info("Saved model")
 
-    scale_pos_weight = (len(train_y) - train_y.sum()) / train_y.sum()
-    xgb_model = XGBClassifier(
-        objective="binary:logistic",
-        eval_metric="error",
-        scale_pos_weight=scale_pos_weight,
-        seed=27,
-        max_depth=best_params["max_depth"],
-        learning_rate=best_params["learning_rate"],
-        n_estimators=best_params["n_estimators"],
-        use_label_encoder=False,
-    )
+        pipeline = PMMLPipeline([("classifier", xgb_model)])
 
-    xgb_model.fit(train_x, train_y)
-
-    joblib.dump(xgb_model, output_filepath)
-    logger.info("Saved model")
+        logger.info("Saving PMML model")
+        skl_to_pmml(
+            pipeline,
+            [
+                "NewCreditCustomer",
+                "Amount",
+                "Interest",
+                "LoanDuration",
+                "Education",
+                "NrOfDependants",
+                "EmploymentDurationCurrentEmployer",
+                "IncomeFromPrincipalEmployer",
+                "IncomeFromPension",
+                "IncomeFromFamilyAllowance",
+                "IncomeFromSocialWelfare",
+                "IncomeFromLeavePay",
+                "IncomeFromChildSupport",
+                "IncomeOther",
+                "ExistingLiabilities",
+                "RefinanceLiabilities",
+                "DebtToIncome",
+                "FreeCash",
+                "CreditScoreEeMini",
+                "NoOfPreviousLoansBeforeLoan",
+                "AmountOfPreviousLoansBeforeLoan",
+                "PreviousRepaymentsBeforeLoan",
+                "PreviousEarlyRepaymentsBefoleLoan",
+                "PreviousEarlyRepaymentsCountBeforeLoan",
+                "Council_house",
+                "Homeless",
+                "Joint_ownership",
+                "Joint_tenant",
+                "Living_with_parents",
+                "Mortgage",
+                "Other",
+                "Owner",
+                "Owner_with_encumbrance",
+                "Tenant",
+                "Entrepreneur",
+                "Fully",
+                "Partially",
+                "Retiree",
+                "Self_employed",
+            ],
+            "PaidLoan",
+            output_filepath + ".pmml",
+        )
 
 
 if __name__ == "__main__":
