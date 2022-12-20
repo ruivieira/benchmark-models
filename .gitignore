@@ -134,3 +134,6 @@ dmypy.json
 */data/interim/*.csv
 */data/processed/*.csv
 .vscode
+
+# Generated models
+models/model.*
