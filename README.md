@@ -11,7 +11,7 @@ A curated collection of datasets and models using the `cookiecutter` Data Scienc
 
 ## Models
 
-| Name                         |Outputs|Type|
-|------------------------------|-------|----|
-| [credit-bias](./credit-bias) | Single output| - |
-
+| Name                                  | Inputs                 | Outputs       | Type                    |
+|---------------------------------------|------------------------|---------------|-------------------------|
+| [credit-bias](./credit-bias)          | -                      | Single output | -                       |
+| [pima-indians-diabetes-multi](./pima-indians-diabetes-multi) | Numerical | Multi output  | Decision Tree regressor |
