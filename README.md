@@ -4,6 +4,10 @@ A curated collection of datasets and models using the `cookiecutter` Data Scienc
 
 ## Datasets
 
+### Multi-output
+
+- [pima-indians-diabetes-multi](./pima-indians-diabetes-multi), the Pima Indians diabetes dataset
+
 ### Model fairness
 
 - [law-data](./law-data), the Law School Admission Council survey data.
