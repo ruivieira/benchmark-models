@@ -6,8 +6,8 @@ coverage
 awscli
 flake8
 pandas
-scikit-learn
+scikit-learn==1.0.1
+joblib>=0.13.0
 python-dotenv>=0.5.1
-joblib
 xgboost==1.7.1
 cookiecutter>=1.4.0
