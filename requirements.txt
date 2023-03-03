@@ -1,13 +1,14 @@
 # external requirements
-click
-colorlog
+click==8.1.3
+colorlog==6.7.0
 Sphinx
-coverage
-awscli
-flake8
-pandas
+coverage==7.2.1
+awscli==1.27.83
+flake8==6.0.0
+pandas==1.5.3
 scikit-learn==1.0.1
 joblib>=0.13.0
 python-dotenv>=0.5.1
 xgboost==1.7.1
 cookiecutter>=1.4.0
+matplotlib==3.7.0
