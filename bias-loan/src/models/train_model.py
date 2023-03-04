@@ -25,6 +25,8 @@ def main(input_data, output_data, model_dest):
     )
 
     model = RandomForestClassifier(
+        n_estimators=20,
+        max_depth=4,
         verbose=True,
         n_jobs=-1
     )
