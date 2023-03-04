@@ -23,13 +23,18 @@ def main(input_data, output_data, model_dest):
         inputs, outputs, test_size=0.4, random_state=23
     )
 
-    model = RandomForestClassifier()
+    model = RandomForestClassifier(verbose=True, n_jobs=-1)
+
+    X_train = X_train.to_numpy()
+    y_train = y_train.to_numpy().ravel()
+
+    print(X_train)
+    print(y_train)
 
     logger.info("Fitting model")
     model.fit(X_train, y_train)
 
-    model.fit(X_train, y_train)
-    logger.info('Train Accuracy: {:.2f}%'.format(model.score(X_test, y_test)*100))
+    logger.info('Train Accuracy: {:.2f}%'.format(model.score(X_test.to_numpy(), y_test.to_numpy().ravel())*100))
 
 
     logger.info("Saving joblib model")
