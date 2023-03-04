@@ -51,8 +51,12 @@ def main(input_filepath, output_filepath):
     data = data.loc[[i for i in list(debts)+list(nodebts)]]
 
     data = data.reset_index(drop=True)
-    outputs_dest_file = os.path.join(output_filepath, "processed.csv")
-    data.to_csv(outputs_dest_file, index=False)
+    outputs_dest_file = os.path.join(output_filepath, "inputs.csv")
+    X = data.drop('Default?', axis=1)
+    X.to_csv(outputs_dest_file, index=False)
+    outputs_dest_file = os.path.join(output_filepath, "outputs.csv")
+    Y = data[['Default?']]
+    Y.to_csv(outputs_dest_file, index=False)
 
 
 if __name__ == '__main__':
