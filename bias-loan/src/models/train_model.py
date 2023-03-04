@@ -6,7 +6,8 @@ import click
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from joblib import dump
+from sklearn.pipeline import Pipeline
+import joblib
 import numpy as np
 
 
@@ -23,8 +24,13 @@ def main(input_data, output_data, model_dest):
         inputs, outputs, test_size=0.4, random_state=23
     )
 
-    model = RandomForestClassifier(verbose=True, n_jobs=-1)
-
+    model = RandomForestClassifier(
+        verbose=True,
+        n_jobs=-1
+    )
+    
+    pipeline = Pipeline([('clf', model)])
+    
     X_train = X_train.to_numpy()
     y_train = y_train.to_numpy().ravel()
 
@@ -32,13 +38,13 @@ def main(input_data, output_data, model_dest):
     print(y_train)
 
     logger.info("Fitting model")
-    model.fit(X_train, y_train)
+    pipeline.fit(X_train, y_train)
 
-    logger.info('Train Accuracy: {:.2f}%'.format(model.score(X_test.to_numpy(), y_test.to_numpy().ravel())*100))
+    logger.info('Train Accuracy: {:.2f}%'.format(pipeline.score(X_test.to_numpy(), y_test.to_numpy().ravel())*100))
 
 
     logger.info("Saving joblib model")
-    dump(model, model_dest + ".joblib")
+    joblib.dump(pipeline, model_dest + ".joblib")
 
 if __name__ == "__main__":
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
